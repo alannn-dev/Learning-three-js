@@ -11,43 +11,97 @@ camera.position.z = 120;
 
 
 
-// MeshLambertMaterial 
 const boxGeometry = new THREE.BoxGeometry(20, 20, 20); // Forme 
 
-// Add texture (Simple texture download)
-const loader = new THREE.TextureLoader();
-const material = new THREE.MeshBasicMaterial({
-map: loader.load('resources/img/wall.jpeg'),
-});
+const cubes = [];
 
-const cube = new THREE.Mesh(boxGeometry, material);
-cube.rotation.set(0.4, 0.2, 0);
-cube.position.x = -50;
-scene.add(cube);
+// TEXTURE DOWNLOADS 
 
+	// -> THE SIMPLEST WAY :
 
+			/* const loader = new THREE.TextureLoader();
+			const material = new THREE.MeshBasicMaterial({
+			map: loader.load('resources/img/wall.jpeg'),
+			});
 
-// Add multiples texture
-const boxTwoGeometry = new THREE.BoxGeometry(20, 20, 20); 
-
-const loaderTwo = new THREE.TextureLoader();
-
-const materials = [
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-1.jpeg')}),
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-2.jpeg')}),
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-3.jpeg')}),
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-4.jpeg')}),
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-5.jpeg')}),
-	new THREE.MeshBasicMaterial({map: loader.load('resources/img/flower-6.jpeg')}),
-  ];
-
-  const cubeTwo = new THREE.Mesh(boxGeometry, materials);
-  cubeTwo.rotation.set(0.4, 0.2, 0);
-  //Ajout forme à la scene
-  scene.add(cubeTwo);
-  
+			const cube = new THREE.Mesh(boxGeometry, material);
+			cube.rotation.set(0.4, 0.2, 0);
+			cube.position.x = -50;
+			scene.add(cube);
+			cubes.push(cube); */
 
 
+	// -> WAITING FOR A TEXTURE TO LOAD :
+
+			const loader = new THREE.TextureLoader();
+			loader.load('resources/img/wall.jpeg', (texture) => {
+				const material = new THREE.MeshBasicMaterial({
+					map: texture,
+				});
+				const cube = new THREE.Mesh(boxGeometry, material);
+				cube.position.x = -50;
+				scene.add(cube);
+				cubes.push(cube);  // add to our list of cubes to rotate
+			});
+
+
+
+	// -> ADD MULTIPLE TEXTURES : 
+
+		/* 	const loadManager = new THREE.LoadingManager();
+			const flowerLoader = new THREE.TextureLoader();
+
+			const materials = [
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-1.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-2.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-3.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-4.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-5.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-6.jpeg')}),
+			];
+
+			const cubeTwo = new THREE.Mesh(boxGeometry, materials);
+			cubeTwo.rotation.set(0.4, 0.2, 0);
+			//Ajout forme à la scene
+			scene.add(cubeTwo);
+			cubes.push(cubeTwo); */
+
+
+
+// -> WAITING FOR MULTIPLE TEXTURES TO LOAD :
+
+			const boxTwoGeometry = new THREE.BoxGeometry(20, 20, 20); 
+			const loadManager = new THREE.LoadingManager();
+			const flowerLoader = new THREE.TextureLoader(loadManager);
+			
+			const materials = [
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-1.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-2.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-3.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-4.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-5.jpeg')}),
+				new THREE.MeshBasicMaterial({map: flowerLoader.load('resources/img/flower-6.jpeg')}),
+			];
+			
+			const loadingElem = document.querySelector('#loading');
+			const progressBarElem = loadingElem.querySelector('.progressbar');
+
+		// ADD LOADING BAR
+			loadManager.onLoad = () => {
+				loadingElem.style.display = 'none';
+				const cubeTwo = new THREE.Mesh(boxTwoGeometry, materials);
+				scene.add(cubeTwo);
+				cubes.push(cubeTwo);  
+			};
+
+			loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
+				const progress = itemsLoaded / itemsTotal;
+				progressBarElem.style.transform = `scaleX(${progress})`;
+			};
+
+		
+	
+			
 // Light
 	const light = new THREE.DirectionalLight(0xFFFFFF,1.05)  // (color, intensity);
 	light.position.set(-10, 15, 50);
@@ -58,9 +112,16 @@ const materials = [
 var time = 0;
 function render() {
 	time += 0.01; 
+
+	cubes.forEach((cube, ndx) => {
+		const speed = .2 + ndx * .1;
+		const rot = time * speed;
+		cube.rotation.x = rot;
+		cube.rotation.y = rot;
+	  });
+
 	requestAnimationFrame(render);
-	cube.rotation.y += 0.01;
-	cubeTwo.rotation.y += 0.01;
+
  	renderer.render(scene, camera);
 }
 render();
