@@ -1,5 +1,3 @@
-/* import {GUI} from 'https://threejs.org/examples/jsm/libs/lil-gui.module.min.js';
- */
 // Create the scene
 	const renderer = new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -59,7 +57,7 @@
 
 
 // Light
-	const light = new THREE.DirectionalLight(0xFFFFFF,3)  // (color, intensity);
+	const light = new THREE.PointLight(0xFFFFFF,3)  // (color, intensity);
 	light.position.set(-10, 15, 150);
 	// Add light to the scene
 	scene.add(light);
