@@ -11,13 +11,13 @@ camera.position.z = 120;
 
 
 
-const boxGeometry = new THREE.BoxGeometry(20, 20, 20); // Forme 
+const boxGeometry = new THREE.BoxGeometry(20, 20, 20); // Cube 
 
 const cubes = [];
 
 // TEXTURE DOWNLOADS 
 
-	// -> THE SIMPLEST WAY :
+	// -> THE SIMPLEST WAY (One texture):
 
 			/* const loader = new THREE.TextureLoader();
 			const material = new THREE.MeshBasicMaterial({
@@ -33,6 +33,7 @@ const cubes = [];
 
 	// -> WAITING FOR A TEXTURE TO LOAD :
 
+			
 			const loader = new THREE.TextureLoader();
 			loader.load('resources/img/wall.jpeg', (texture) => {
 				const material = new THREE.MeshBasicMaterial({
@@ -70,7 +71,7 @@ const cubes = [];
 
 // -> WAITING FOR MULTIPLE TEXTURES TO LOAD :
 
-			const boxTwoGeometry = new THREE.BoxGeometry(20, 20, 20); 
+/* 			const boxGeometry = new THREE.BoxGeometry(20, 20, 20); */			
 			const loadManager = new THREE.LoadingManager();
 			const flowerLoader = new THREE.TextureLoader(loadManager);
 			
@@ -89,7 +90,7 @@ const cubes = [];
 		// ADD LOADING BAR
 			loadManager.onLoad = () => {
 				loadingElem.style.display = 'none';
-				const cubeTwo = new THREE.Mesh(boxTwoGeometry, materials);
+				const cubeTwo = new THREE.Mesh(boxGeometry, materials);
 				scene.add(cubeTwo);
 				cubes.push(cubeTwo);  
 			};
@@ -100,7 +101,18 @@ const cubes = [];
 			};
 
 		
-	
+/* 			const boxGeometry = new THREE.BoxGeometry(20, 20, 20); */
+			const loaderThree = new THREE.TextureLoader();
+			loaderThree.load('resources/img/mip-low-res-enlarged.png', (texture) => {
+				const material = new THREE.MeshBasicMaterial({
+					map: texture,
+				});
+				const cube = new THREE.Mesh(boxGeometry, material);
+				cube.position.x = 50;
+				scene.add(cube);
+				cubes.push(cube);  
+			});
+
 			
 // Light
 	const light = new THREE.DirectionalLight(0xFFFFFF,1.05)  // (color, intensity);
